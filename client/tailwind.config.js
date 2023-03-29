@@ -39,6 +39,13 @@ module.exports = {
       lightGreen: '#d1e7dd',
       darkGreen: '#0f5132',
 
+      blue: 'rgb(100, 122, 203)',
+      lightBlue: 'rgb(224, 232, 249)',
+      yellow: 'rgb(233, 185, 73)',
+      lightYellow: 'rgb(252, 239, 199)',
+      orange: 'rgb(214, 106, 106)',
+      lightOrange: 'rgb(255, 238, 238)',
+
     },
     extend: {},
   },

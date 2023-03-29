@@ -6,7 +6,7 @@ export default function FormRow({label, type, name, handleChange, value, select,
     <div className='mt-4 text-lg'>
         <label htmlFor={name} >{label} :</label>
         {select ?
-          <select name={name} id={name} className='block w-full mt-2 bg-grey50 p-2'>
+          <select onChange={handleChange} name={name} id={name} value={value} className='block w-full mt-2 bg-grey50 p-2'>
             {(jobType && jobType.map((ele, index)=>{
               return <option key={index} value={ele} className='text-sm'>{ele}</option>
             }))

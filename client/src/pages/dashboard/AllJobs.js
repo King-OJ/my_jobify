@@ -1,7 +1,9 @@
-import React from 'react'
-import { FormRow } from '../../components'
+import React, { useEffect } from 'react'
+import { FormRow, Job, Loader, JobModal, Alert } from '../../components'
+import { useAppContext } from '../../context/appContext'
 
 export default function AllJobs() {
+  const { getAllJobs, isLoading, jobs, totalJobs, showAlert, numOfPages } = useAppContext()
   const status = [
     'all',
     'pending',
@@ -26,9 +28,15 @@ export default function AllJobs() {
   function handleChange(){
     console.log('zes');
   }
+
+  useEffect(() => {
+    getAllJobs()
+  }, [])
+  
+
   return (
     <div className='m-6'>
-    <div className="w-full rounded shadow-md bg-white px-6 py-10">
+    <div className="w-full rounded shadow-md bg-white px-6 py-10 mb-10">
       <h4>search form</h4>
       <form className='mt-8 grid sm:grid-cols-2 gap-4 md:grid-cols-3'>
         <FormRow label='search' type='text' name='search' handleChange={handleChange} value=''/>
@@ -41,6 +49,21 @@ export default function AllJobs() {
         </div>
       </form>
     </div>
+    {isLoading ? <Loader />
+    :
+    <>
+      <h4 className="font-semibold text-2xl mb-6">{`${totalJobs} Jobs Found`}</h4>
+      {showAlert && <Alert />}
+      <div className="grid gap-4 md:grid-cols-2"> 
+        {jobs.map((job)=> {
+          const {_id} = job
+          return <Job key={_id} {...job} />
+        })}
+        
+      </div>
+    </>
+
+  }
   </div>
   )
 }

@@ -23,7 +23,9 @@ export async function register(req, res){
         name: user.name,
         lastName: user.lastName,
         location: user.location,
-       }, token})
+       }, 
+       location: user.location,
+       token})
    
 }
 
@@ -53,7 +55,9 @@ export async function login(req, res){
         name: user.name,
         lastName: user.lastName,
         location: user.location,
-       }, token})
+       },
+       location: user.location,
+       token})
 
 }
 
@@ -83,6 +87,8 @@ export async function updateUser(req, res){
         name: user.name,
         lastName: user.lastName,
         location: user.location,
-       }, token})
+       }, 
+       location: user.location,
+       token})
 }
 
