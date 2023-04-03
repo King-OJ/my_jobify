@@ -31,6 +31,7 @@ export default function Stats() {
   
   useEffect(() => {
     showStats();
+    // eslint-disable-next-line 
   }, []);
 
 
