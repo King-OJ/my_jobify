@@ -19,6 +19,7 @@ export async function createJob(req, res){
 }
 
 export async function getAllJobs(req, res){
+    const { status } = req.query
     const allJobs = await Job.find({ createdBy: req.user.userId})
     res.status(StatusCodes.OK).json({jobs: allJobs, totalJobs: allJobs.length, numOfPages: 1})
 }
