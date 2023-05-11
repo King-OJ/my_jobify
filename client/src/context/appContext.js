@@ -1,6 +1,6 @@
 import React, { useReducer, useContext, createContext } from 'react';
 import axios from 'axios';
-import { CANCEL_DELETE_JOB, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from './actions';
+import { CANCEL_DELETE_JOB, CHANGE_PAGE, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from './actions';
 import reducer from './reducers';
 
 const user = localStorage.getItem('user')
@@ -30,8 +30,14 @@ const initialState = {
     jobs: [],
     totalJobs: null,
     numOfPages: null,
+    page: 1,
     stats: {},
-    monthlyApplications: []
+    monthlyApplications: [],
+    search: '',
+    searchStatus: 'all',
+    searchType: 'all',
+    sort: 'latest'
+
 }
 
 const AppContext = createContext()
@@ -260,10 +266,17 @@ export function AppProvider({ children }){
 
     //all jobs page
     async function getAllJobs(){
+        const { search, searchStatus, searchType, sort, page } = state;
+        let url = `/jobs?page=${page}&status=${searchStatus}&jobType=${searchType}&sort=${sort}`
+
+        if (search) {
+            url = url + `&search=${search}`;
+          }
+          
         dispatch({type:GETALLJOBS_BEGIN})
         try {
-            const { data } = await authFetch.get('/jobs')
-            dispatch({type: GETALLJOBS_SUCCESS, payload:{ jobs: data.jobs.reverse(), totalJobs: data.totalJobs, numOfPages: data.numOfPages}})
+            const { data } = await authFetch.get(url)
+            dispatch({type: GETALLJOBS_SUCCESS, payload:{ jobs: data.jobs, totalJobs: data.totalJobs, numOfPages: data.numOfPages}})
         } catch (error) {
             console.log(error);
             dispatch({type: GETALLJOBS_ERROR})
@@ -283,6 +296,11 @@ export function AppProvider({ children }){
         }
     }
 
+    function changePage(page){
+        dispatch({type: CHANGE_PAGE, payload: page})
+    }
+
+
 
     return <AppContext.Provider value={{
     ...state,
@@ -301,7 +319,8 @@ export function AppProvider({ children }){
     openDeleteJobModal,
     closeDeleteJobModal,
     deleteJob,
-    showStats
+    showStats,
+    changePage,
     }}>{children}</AppContext.Provider>
 }
 

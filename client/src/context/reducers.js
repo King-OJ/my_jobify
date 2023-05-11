@@ -1,4 +1,4 @@
-import { CANCEL_DELETE_JOB, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_ERROR, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_JOB_ERROR, UPDATE_JOB_SUCCESS, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from "./actions";
+import { CANCEL_DELETE_JOB, CHANGE_PAGE, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_ERROR, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, MOVE_PAGE, PREV_PAGE, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_JOB_ERROR, UPDATE_JOB_SUCCESS, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from "./actions";
 
 
 export default function reducer(state, action) {
@@ -105,7 +105,7 @@ export default function reducer(state, action) {
         case HANDLE_FORM_CHANGE:
           const {name, value } = action.payload
           return {
-            ...state, [name]: value
+            ...state, page:1, [name]: value
           }
           
         case CLEAR_FORM_INPUTS:
@@ -116,7 +116,11 @@ export default function reducer(state, action) {
             jobType: 'full-time',
             status: 'pending',
             isEditing: false,
-            editJobId: ''
+            editJobId: '',
+            search: '',
+            searchStatus: 'all',
+            searchType: 'all',
+            sort: 'latest'
         }
           return {
             ...state, ...initialState 
@@ -265,6 +269,9 @@ export default function reducer(state, action) {
           monthlyApplications,
           isLoading: false,
         }
+
+        case CHANGE_PAGE: 
+        return {...state, page: action.payload}
 
         default:
             break;

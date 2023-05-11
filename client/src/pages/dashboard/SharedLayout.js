@@ -14,11 +14,11 @@ export default function SharedLayout() {
   }
 
   return (
-    <main className='overflow-x-hidden'>
-      <div className="relative h-screen my-0 flex flex-row items-start">
+    <main className='w-screen'>
+      <div className="relative my-0 flex flex-row w-full">
         {isSidebarOpen && <MobileMenu toggleSidebar={toggleSidebar} closeSidebar={closeSidebar}/>}
         <BigSidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <div className="flex-1">
+        <div className={isSidebarOpen ? 'fixed lg:w-[80%] lg:left-[20%] top-0 bottom-0 overflow-y-auto transition-all': 'fixed w-full inset-0 overflow-y-auto left-0 h-full transition-all'}>
           <Navbar toggleSidebar={toggleSidebar} />
           <Outlet />
         </div>

@@ -7,7 +7,7 @@ import Loader from "./Loader";
 import Job from "./Job";
 import JobModal from "./JobModal";
 import StatsBox from "./StatsBox";
+import PageBtnContainer from "./PageBtnContainer";
 
 
-
-export { FormRow, BigSidebar, Navbar, Alert, MobileMenu, Loader, Job, JobModal, StatsBox }
+export { FormRow, BigSidebar, Navbar, Alert, MobileMenu, Loader, Job, JobModal, StatsBox, PageBtnContainer }
