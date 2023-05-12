@@ -12,7 +12,7 @@ async function populateDB(){
         await connectDB(process.env.MONGO_URL)
 
         //clearout all the previous jobs from the job document
-        await Job.deleteMany()
+        // await Job.deleteMany()
 
         const jsonMockJobs = JSON.parse(await readFile(new URL('./jobify-mockJobs.json', import.meta.url)) )
         await Job.create(jsonMockJobs)

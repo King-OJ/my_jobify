@@ -1,4 +1,4 @@
-import { CANCEL_DELETE_JOB, CHANGE_PAGE, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_ERROR, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, MOVE_PAGE, PREV_PAGE, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_JOB_ERROR, UPDATE_JOB_SUCCESS, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from "./actions";
+import { CANCEL_DELETE_JOB, CHANGE_PAGE, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_ERROR, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_JOB_ERROR, UPDATE_JOB_SUCCESS, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from "./actions";
 
 
 export default function reducer(state, action) {
@@ -53,14 +53,21 @@ export default function reducer(state, action) {
           }
     
         case LOGIN_USER_SUCCESS: 
-     
+          const { user: currentUser } = action.payload
+          let alertTxt
+          if(currentUser.email === "test-user@gmail.com"){
+            alertTxt = "Logged in as test-user, Redirecting!!!"
+          }
+          else {
+            alertTxt = 'Login Successfully, Redirecting!'
+          }
           return {
             ...state,
             isLoading: false,
             showAlert: true,
-            alertText: 'Login Successfully, Redirecting!',
+            alertText: alertTxt,
             alertType: 'success',
-            user: action.payload.user,
+            user: currentUser,
             token: action.payload.token,
             userLocation: action.payload.location
           }
@@ -226,6 +233,7 @@ export default function reducer(state, action) {
         case SET_DELETE_JOB: 
         return {
           ...state,
+          deleting: false,
           isDeleting: true,
           deleteJobName: action.payload.name,
           deleteJobId: action.payload.id,

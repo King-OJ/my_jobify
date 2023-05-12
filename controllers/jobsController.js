@@ -19,6 +19,7 @@ export async function createJob(req, res){
 }
 
 export async function getAllJobs(req, res){
+
     const { status, jobType, search, sort } = req.query
     
     const queryObject = { createdBy: req.user.userId}

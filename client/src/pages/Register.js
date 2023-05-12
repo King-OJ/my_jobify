@@ -14,7 +14,7 @@ export default function Register() {
     name: '',
     email: '',
     password: '',
-    isMember: false
+    isMember: true
   })
 
   function handleChange(e){
@@ -62,7 +62,7 @@ export default function Register() {
           <FormRow type='password' name='password' label='password' handleChange={handleChange} value={newUser.password}></FormRow>
 
           <button type='submit' disabled={isLoading} onClick={handleSubmit} className="mt-6 bg-primary500 text-white w-full ">submit</button>
-          <button type='submit' disabled={isLoading} className="mt-6 bg-primary800 text-white w-full ">demo</button>
+          <button type='button' disabled={isLoading} onClick={()=>loginUser({email: 'test-user@gmail.com', password: 'secret'})} className="mt-6 bg-primary800 text-white w-full ">{isLoading ? 'loading...':'view app'}</button>
 
           <div className="text-center mt-4">{newUser.isMember ? 'Not yet a member ?' : 'Already a member ?'} <span onClick={()=>setNewUser({...newUser, isMember: !newUser.isMember })} className='text-primary500 capitalize hover:cursor-pointer'>{newUser.isMember ? 'register' : 'login' }</span></div>
 
