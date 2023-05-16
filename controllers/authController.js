@@ -111,3 +111,12 @@ export async function getCurrentUser(req, res){
        }, 
        location: user.location})
 }
+
+export async function logout(req, res){
+    res.cookie('token', 'logout', {
+        httpOnly: true,
+        expires: new Date(Date.now())
+    })
+
+    res.status(StatusCodes.OK).json({msg: "User successfully logged out!"})
+}

@@ -175,7 +175,8 @@ export function AppProvider({ children }){
         }
     }
     
-    function logoutUser(){
+    async function logoutUser(){
+        await authFetch.get('/auth/logout')
         dispatch({type: LOGOUT_USER})
     }
 

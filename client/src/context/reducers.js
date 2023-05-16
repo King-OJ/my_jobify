@@ -1,5 +1,4 @@
 import { CANCEL_DELETE_JOB, CHANGE_PAGE, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_ERROR, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, GET_CURRENT_USER_BEGIN, GET_CURRENT_USER_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_JOB_ERROR, UPDATE_JOB_SUCCESS, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from "./actions";
-import { initialState } from "./appContext";
 
 export default function reducer(state, action) {
     switch (action.type) {
@@ -79,7 +78,11 @@ export default function reducer(state, action) {
     
         case LOGOUT_USER: 
         return {
-          ...initialState,
+          ...state,
+          user: null,
+          userLocation: '',
+          jobLocation: '',
+          isLoading: false,
           userLoading: false
         }
 
