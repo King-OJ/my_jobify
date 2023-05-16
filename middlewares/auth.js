@@ -3,13 +3,12 @@ import { UnauthenticatedError } from '../errors/index.js'
 
 export default async function auth(req, res, next){
     
-    const authHeader = req.headers.authorization;
+    // const authHeader = req.headers.authorization;
+    const token = req.cookies.token
 
-    if(!authHeader){
+    if(!token){
         throw new UnauthenticatedError('Authentication Invalid')
     }
-
-    const token = authHeader.split(' ')[1]
 
     try {
        const payload = jwt.verify(token, process.env.JWT_SECRET)

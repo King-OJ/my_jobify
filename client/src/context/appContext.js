@@ -1,20 +1,17 @@
-import React, { useReducer, useContext, createContext } from 'react';
+import React, { useReducer, useContext, createContext, useEffect } from 'react';
 import axios from 'axios';
-import { CANCEL_DELETE_JOB, CHANGE_PAGE, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from './actions';
+import { CANCEL_DELETE_JOB, CHANGE_PAGE, CLEAR_ALERT, CLEAR_FORM_INPUTS, CREATE_JOB_BEGIN, CREATE_JOB_ERROR, CREATE_JOB_SUCCESS, DELETE_JOB_BEGIN, DELETE_JOB_SUCCESS, GETALLJOBS_BEGIN, GETALLJOBS_ERROR, GETALLJOBS_SUCCESS, GET_CURRENT_USER_BEGIN, GET_CURRENT_USER_SUCCESS, HANDLE_FORM_CHANGE, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LOGOUT_USER, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, SET_DELETE_JOB, SET_EDIT_JOB, SHOW_ALERT, SHOW_STATS_BEGIN, SHOW_STATS_SUCCESS, UPDATE_JOB_BEGIN, UPDATE_JOB_ERROR, UPDATE_JOB_SUCCESS, UPDATE_USER_BEGIN, UPDATE_USER_ERROR, UPDATE_USER_SUCCESS } from './actions';
 import reducer from './reducers';
 
-const user = localStorage.getItem('user')
-const token = localStorage.getItem('token')
-const userLocation = localStorage.getItem('location')
-
-const initialState = {
+export const initialState = {
+    userLoading: true,
     isLoading: false,
     showAlert: false,
     alertText: '',
     alertType: '',
-    user: user ? JSON.parse(user) : null,
-    token: token ? JSON.parse(token) : null,
-    userLocation: userLocation ? JSON.parse(userLocation) : '',
+    user: null,
+    userLocation: '',
+    jobLocation: '',
     isEditing: false,
     editJobId: '',
     isDeleting: false,
@@ -24,7 +21,6 @@ const initialState = {
     deleteJobId: '',
     company: '',
     position: '',
-    jobLocation: userLocation ? JSON.parse(userLocation) : '',
     jobType: 'full-time',
     status: 'pending',
     jobs: [],
@@ -60,12 +56,12 @@ export function AppProvider({ children }){
 
 
     //method 3 setting defalt auth headers before sending requests
-    authFetch.interceptors.request.use((config)=> {
-        config.headers['Authorization'] = `Bearer ${state.token}`
-        return config
-    },(error)=> {
-        return Promise.reject(error)
-    })
+    // authFetch.interceptors.request.use((config)=> {
+    //     config.headers['Authorization'] = `Bearer ${state.token}`
+    //     return config
+    // },(error)=> {
+    //     return Promise.reject(error)
+    // })
 
     authFetch.interceptors.response.use((response)=> {
         return response;
@@ -90,28 +86,30 @@ export function AppProvider({ children }){
         dispatch({type:CLEAR_ALERT })
     }
 
-    function addToLocalStorage(user, token, location){
-        localStorage.setItem('user', JSON.stringify(user))
-        localStorage.setItem('token', JSON.stringify(token))
-        localStorage.setItem('location', JSON.stringify(location))
+    async function getCurrentUser (){
+        dispatch({ type: GET_CURRENT_USER_BEGIN })
+        try {
+            const { data } = await authFetch.get('/auth/getCurrentUser')
+            const {user, location } = data
+           dispatch({ type:GET_CURRENT_USER_SUCCESS, payload:{ user, location} })
+        } catch (error) {
+            if(error.response.status === 401) return;
+            logoutUser()
+        }
     }
 
-    function removeFromLocalStorage(){
-        localStorage.removeItem('user')
-        localStorage.removeItem('token')
-        localStorage.removeItem('location')
-    }
+    useEffect(() => {
+        getCurrentUser();
+      }, []);
 
     async function registerUser(currentUser){
         dispatch({type:REGISTER_USER_BEGIN })
         try {
         const resp = await axios.post('/api/v1/auth/register', currentUser)
-        const token = resp.data.token
         const user = resp.data.user
         const location = resp.data.location
        
-        dispatch({type:REGISTER_USER_SUCCESS, payload: {token, user, location}})
-        addToLocalStorage(user, token, location)
+        dispatch({type:REGISTER_USER_SUCCESS, payload: { user, location}})
 
         setTimeout(() => {
             clearAlert()
@@ -135,12 +133,10 @@ export function AppProvider({ children }){
         dispatch({type:LOGIN_USER_BEGIN })
         try {
         const resp = await axios.post('/api/v1/auth/login', currentUser)
-        const token = resp.data.token
         const user = resp.data.user
         const location = resp.data.location
        
-        dispatch({type:LOGIN_USER_SUCCESS, payload: {token, user, location}})
-        addToLocalStorage(user, token, location)
+        dispatch({type:LOGIN_USER_SUCCESS, payload: { user, location}})
 
         setTimeout(() => {
             clearAlert()
@@ -159,6 +155,8 @@ export function AppProvider({ children }){
         }
         
     }
+
+
     //profile page
     async function updateUser(currentUser){
         dispatch({ type:UPDATE_USER_BEGIN })
@@ -166,9 +164,8 @@ export function AppProvider({ children }){
         try {
            const { data } = await authFetch.patch('/auth/updateUser', currentUser)
 
-           const {user, token, location } = data
-           dispatch({ type:UPDATE_USER_SUCCESS, payload:{token, user, location} })
-           addToLocalStorage(user, token, location)
+           const {user, location } = data
+           dispatch({ type:UPDATE_USER_SUCCESS, payload:{ user, location} })
            displayAlert('Profile successfully updated!', 'success')
         } 
 
@@ -180,7 +177,6 @@ export function AppProvider({ children }){
     
     function logoutUser(){
         dispatch({type: LOGOUT_USER})
-        removeFromLocalStorage()
     }
 
     //add job page
@@ -256,11 +252,13 @@ export function AppProvider({ children }){
             status
             } 
         await authFetch.patch(`/jobs/${editJobId}`, editJobDetails )
+        dispatch({type: UPDATE_JOB_SUCCESS })
         displayAlert('Job has been successfully edited!', 'success')
         
         } catch (error) {
             console.log(error);
             error.response.status === 401 ? displayAlert(`${error.response.data.msg}! Logging out!`, 'error') : displayAlert(`${error.response.data.msg}!!`, 'error');
+            dispatch({type: UPDATE_JOB_ERROR })
         }
     }
 
@@ -321,6 +319,7 @@ export function AppProvider({ children }){
     deleteJob,
     showStats,
     changePage,
+    getCurrentUser
     }}>{children}</AppContext.Provider>
 }
 

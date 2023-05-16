@@ -12,10 +12,13 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
-
+//security packages
 import helmet from 'helmet';
 import xss from 'xss-clean';
 import mongoSanitize from 'express-mongo-sanitize';
+
+//express cookie parser dor accessing cookies from browser
+import cookieParser from 'cookie-parser';
 
 const app = express()
 const port = process.env.PORT || 5000;
@@ -25,6 +28,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.resolve(__dirname, './client/build')))
 
 app.use(express.json())
+app.use(cookieParser())
+
 //security packages
 app.use(helmet());
 app.use(xss());
